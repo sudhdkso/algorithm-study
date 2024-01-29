@@ -1,7 +1,6 @@
 class Solution {
     public int solution(int storey) {
         int answer = 0;
-        
 
         while(storey != 0){
             int nextNumber = (storey%100)/10;
