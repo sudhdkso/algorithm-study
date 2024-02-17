@@ -55,7 +55,6 @@ class Solution {
             Collections.sort(puzzle);
         }
         
-        
         public int getSize(){
             return puzzle.size();
         }
@@ -172,13 +171,13 @@ class Solution {
         Puzzle rotated = new Puzzle();
         
         for(Point point : p.puzzle){
-            int temp = point.x;
-            rotated.addPoint(new Point(point.y, -temp));
+            rotated.addPoint(new Point(point.y, -point.x));
         }
         
         return rotated;
     }
     
+    //(0,0)기준으로 정렬하는 함수
     private Puzzle alignLeft(Puzzle p){
         Puzzle align = new Puzzle();
         int minX = p.getMinX();
@@ -204,6 +203,7 @@ class Solution {
         return false;
     }
     
+    //ep와 p가 같은 조각인지 확인하는 함수
     private boolean isCollectedPuzzle(Puzzle ep, Puzzle p){
         for(int i=0;i<ep.getSize();i++){
             Point ePoint = ep.puzzle.get(i);
