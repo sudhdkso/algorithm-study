@@ -1,70 +1,63 @@
 import java.util.*;
 class Solution {
-    private Map<String, ArrayList<Integer>> scoreByInfo = new HashMap<>();
+    static Map<String, ArrayList<Integer>> scores = new HashMap<>();
     public int[] solution(String[] info, String[] query) {
         int[] answer = new int[query.length];
         
-        getAllCombination(info);
+        //모든 조합 만들기
+        for(String s : info){
+            getAllCombination(0,s.split(" "), new String[4]);
+        }
         
-        for(String key : scoreByInfo.keySet()){
-            Collections.sort(scoreByInfo.get(key));
+        for(String key : scores.keySet()){
+            Collections.sort(scores.get(key));
         }
         
         for(int i=0;i<query.length;i++){
-            String[] str = query[i].replaceAll(" and "," ").split(" ");
-            String q = String.join(" ",Arrays.copyOfRange(str, 0, 4));
-            int score = Integer.parseInt(str[4]);
-            answer[i] = getTargetCountByQuery(q, score);
+            String[] s = query[i].replace(" and","").split(" ");
+
+            int score = Integer.parseInt(s[4]);
+            String key = s[0]+s[1]+s[2]+s[3];
+            if(!scores.containsKey(key)){
+                answer[i] = 0;
+                continue;
+            }
+            answer[i] = binarySearch(scores.get(key), score);
         }
+        
         return answer;
     }
     
-    private int getTargetCountByQuery(String query, int targetScore){
-        if(!scoreByInfo.containsKey(query)){
-            return 0;
-        }
-        
-        ArrayList<Integer> scores = scoreByInfo.get(query);
-
-        return binarySearch(targetScore, scores);
-    }
-    
-    private int binarySearch(int target, ArrayList<Integer> scores){
-        int low = 0, high = scores.size()-1;
-        int result = 0;
-       
+    private static int binarySearch(ArrayList<Integer> list, int score){
+        int low = 0, high = list.size()-1;
         while(low <= high){
-            int mid = (low + high)/2;
-            int score = scores.get(mid);
-            if(score < target){
+            int mid = (low+high)/2;
+            if(list.get(mid) < score){
                 low = mid + 1;
             }
             else{
-                high = mid - 1;
+                high = mid-1;
             }
+            
         }
-        return scores.size()-low;
-    }
-    private void getAllCombination(String[] info){
-        for(String i : info){
-            getCombinationByInfo(0, i.split(" "), new String[4]);
-        }
+        return list.size()-low;
     }
     
-    private void getCombinationByInfo(int depth, String[] info, String[] comb){
-        
+    
+    private static void getAllCombination(int depth, String[] info, String[] mInfo){
         if(depth == 4){
-            String combStr = String.join(" ", comb);
-            if(!scoreByInfo.containsKey(combStr)){
-                scoreByInfo.put(combStr, new ArrayList<>());
+            String str = String.join("",mInfo);
+            if(!scores.containsKey(str)){
+                scores.put(str,new ArrayList<>());
             }
-            scoreByInfo.get(combStr).add(Integer.parseInt(info[depth]));
+            scores.get(str).add(Integer.parseInt(info[depth]));
             return;
         }
-        comb[depth] = info[depth];
-        getCombinationByInfo(depth+1, info, comb);
-        comb[depth] = "-";
-        getCombinationByInfo(depth+1, info, comb);
+        
+        mInfo[depth] = info[depth];
+        getAllCombination(depth+1,info,mInfo);
+        mInfo[depth] = "-";
+        getAllCombination(depth+1,info,mInfo);
         
     }
 }
