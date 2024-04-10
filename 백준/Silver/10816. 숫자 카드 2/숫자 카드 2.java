@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -16,53 +17,22 @@ public class Main {
 
         int N = Integer.parseInt(br.readLine());
 
-        int[] card = new int[N];
+        Map<Integer, Integer> card= new HashMap<>();
         StringTokenizer st = new StringTokenizer(br.readLine()," ");
         for(int i=0;i<N;i++){
-            card[i] = Integer.parseInt(st.nextToken());
+            int num = Integer.parseInt(st.nextToken());
+            card.put(num, card.getOrDefault(num,0)+1);
         }
 
-        Arrays.sort(card);
         int M = Integer.parseInt(br.readLine());
-        int[] arr = new int[M];
+
         st = new StringTokenizer(br.readLine()," ");
 
         for(int i=0;i<M;i++){
             int target = Integer.parseInt(st.nextToken());
-            bw.write((upperBound(card, target)-lowerBound(card, target))+" ");
+            bw.write(card.getOrDefault(target,0)+" ");
         }
         bw.flush();
     }
-
-    private static int upperBound(int[] arr, int target){
-        int low = 0, high = arr.length;
-
-        while(low < high){
-            int mid = (low+high)/2;
-
-            if(arr[mid] > target){
-                high = mid;
-            }
-            else{
-                low = mid+1;
-            }
-        }
-        return low;
-    }
-
-    private static int lowerBound(int[] arr, int target){
-        int low = 0, high = arr.length;
-
-        while(low < high){
-            int mid = (low+high)/2;
-
-            if(arr[mid] >= target){
-                high = mid;
-            }
-            else{
-                low = mid+1;
-            }
-        }
-        return low;
-    }
+    
 }
