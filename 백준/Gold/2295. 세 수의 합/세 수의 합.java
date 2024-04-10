@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Main {
@@ -26,19 +27,18 @@ public class Main {
                 two.add(arr[i]+arr[j]);
             }
         }
-
+        Arrays.sort(arr);
         Collections.sort(two);
-        int max = 0;
+
         for(int i=N-1;i>=0;i--){
             for(int j=0;j<i;j++){
                 if(binarySearch(arr[i]-arr[j])){
-                    max = Math.max(arr[i],max);
-                    
+                    bw.write(arr[i]+"\n");
+                    bw.flush();
+                    return;
                 }
             }
         }
-        bw.write(String.valueOf(max));
-        bw.flush();
     }
 
     private static boolean binarySearch(int target){
