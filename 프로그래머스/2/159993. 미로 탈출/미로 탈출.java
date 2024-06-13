@@ -1,79 +1,75 @@
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.Arrays;
 
 class Solution {
-    
-    private class Point{
-        int x,y, dist;
-        public Point(int x, int y, int dist){
-            this.x = x;
-            this.y = y;
-            this.dist = dist;
-        }
-        
-        public Point(int x, int y){
-            this(x,y,0);
-        }
-        
-    }
-    
-    private char START = 'S', END = 'E', LEVER = 'L', WALL = 'X', PASS = 'O';
-    
+    private static char START = 'S', LEVER = 'L', WALL = 'X', PATH = 'O', END = 'E';
     public int solution(String[] maps) {
-
-        int sToL = bfs(START, maps, LEVER);
-        int lToE = bfs(LEVER, maps, END);
-        
-        int answer = sToL == -1 || lToE == -1? -1 : sToL + lToE;
-        return answer;
-    }
-    private int[] dx = {1,-1,0,0}, dy = {0,0,1,-1};
-    
-    private Point findPosition(char c, String[] maps){
+        int answer = 0;
         
         int n = maps.length;
         int m = maps[0].length();
         
+        char[][] ch = new char[n][m];
+        
         for(int i=0;i<n;i++){
-            if(maps[i].indexOf(String.valueOf(c)) < 0) continue;
-            
-            for(int j=0;j<m;j++){
-                if(maps[i].charAt(j) == c){
-                    return new Point(i,j);
-                }    
-            }
+            ch[i] = maps[i].toCharArray();
         }
-        return null;
+        
+        int sToL = bfs(START,LEVER, n , m ,ch);
+        int lToE = bfs(LEVER,END, n , m ,ch);
+        answer = (sToL == -1 || lToE == -1) ? -1 : sToL+lToE;
+        return answer;
     }
     
-    private int bfs(char start, String[] maps, char find){
-        Queue<Point> q = new LinkedList<>();
+    private Integer[] findPosition(char target, char[][] maps){
+        int n = maps.length;
+        int m = maps[0].length;
         
-        int n = maps.length, m = maps[0].length();
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(maps[i][j] == target){
+                    return new Integer[]{i,j};
+                }
+            }
+        }
+        return new Integer[]{-1,-1};
+    }
+    
+    int[] dx = {1,0,-1,0}, dy = {0,1,0,-1};
+    
+    private int bfs(char st, char dt, int n, int m, char[][] maps){
+        Queue<Integer[]> q = new LinkedList<>();
         
+        Integer[] s = findPosition(st, maps);
+        q.offer(s);
         boolean[][] visited = new boolean[n][m];
+        int[][] dist = new int[n][m];
         
-        Point ps = findPosition(start, maps);
-        q.offer(ps);
+        for(int i=0;i<n;i++){
+            Arrays.fill(dist[i],Integer.MAX_VALUE);
+        }
         
-        
-        visited[ps.x][ps.y] = true;
+        dist[s[0]][s[1]] = 0;
+        visited[s[0]][s[1]] = true;
         
         while(!q.isEmpty()){
-            Point p = q.poll();
-            
-            if(maps[p.x].charAt(p.y) == find){
-                return p.dist;
+            Integer[] now = q.poll();
+            if(maps[now[0]][now[1]] == dt){
+                return dist[now[0]][now[1]];
             }
             for(int i=0;i<4;i++){
-                int nx = p.x + dx[i];
-                int ny = p.y + dy[i];
+                int nx = now[0] + dx[i];
+                int ny = now[1] + dy[i];
                 
-                if(nx >= 0 && ny >= 0 && nx < n && ny < m){
-                    if(maps[nx].charAt(ny) != WALL && !visited[nx][ny]){
-                        q.offer(new Point(nx,ny,p.dist+1));
+                if(nx >=0 && ny >= 0 && nx < n && ny < m){
+                    if(visited[nx][ny] || maps[nx][ny] == WALL) continue;
+                    if(dist[nx][ny] > dist[now[0]][now[1]] + 1){
+                        dist[nx][ny] = dist[now[0]][now[1]] + 1;
+                        q.offer(new Integer[]{nx,ny});
                         visited[nx][ny] = true;
                     }
+                    
                 }
             }
         }
