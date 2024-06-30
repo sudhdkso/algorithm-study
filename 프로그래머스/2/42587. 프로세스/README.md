@@ -1,10 +1,10 @@
 # [level 2] 프로세스 - 42587 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42587) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42587?language=kotlin) 
 
 ### 성능 요약
 
-메모리: 77 MB, 시간: 0.72 ms
+메모리: 62.7 MB, 시간: 16.88 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2024년 06월 10일 22:01:27
+2024년 06월 30일 22:31:04
 
 ### 문제 설명
 
