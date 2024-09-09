@@ -1,72 +1,52 @@
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
+
 class Solution {
-    private List<Integer[]> salesList = new ArrayList<>();
+    //할인율 1 ~ 40
+    
+    private List<int[]> sales = new ArrayList<>();
     public int[] solution(int[][] users, int[] emoticons) {
         int[] answer = new int[2];
-        //answer[0] : emoticons plus buyer
-        //answer[1] : emoticons total amount
+        getSalesList(emoticons.length, 0, new int[emoticons.length]);
         
-        getAllSales(0, new int[emoticons.length]);
-        
-        for(Integer[] sales : salesList){
-           int[] result = calcTotalEmoticons(users, emoticons, sales);
-            
-           if(result[0] > answer[0]){
-             answer = result;
-           } 
-           else if (result[0] == answer[0] && result[1] > answer[1]){
-             answer = result;
-          }
+        for(int[] sale: sales){
+            int[] arr = new int[2];
+            for(int i=0;i<users.length;i++){
+                int[] result = buyEmoticon(users[i], emoticons, sale);
+                arr[0] += result[0];
+                arr[1] += result[1];
+            }
+            if(arr[0] > answer[0] || (answer[0] == arr[0] && arr[1] > answer[1])){
+                answer = Arrays.copyOf(arr,2);
+            }
         }
         return answer;
     }
     
-    
-    public void getAllSales(int index, int[] sales){
-      if(index >= sales.length){
-           salesList.add(Arrays.stream(sales).boxed().toArray(Integer[]::new));
-           return;
-      }
+    private int[] buyEmoticon(int[] user, int[] emoticons, int[] sale){
+        int result = 0;
         
-      for(int i=10;i<=40;i+=10){
-          sales[index] = i;
-          getAllSales(index+1, sales);
-      }
+        for(int i=0;i<emoticons.length;i++){
+            if(sale[i] < user[0]) continue;
+            int price = (int)((double)emoticons[i] * (double)(100-sale[i])/100.0);
+            result += price;
+        }
+        if(result >= user[1]){
+            return new int[]{1,0};
+        }
+        return new int[]{0,result};
+        
+    
     }
     
-    public int[] calcTotalEmoticons(int[][] users, int[] emoticons, Integer[] sales){
-        int[] result = new int[2];
-        int[] salesEmoticons = calcSaleEmoticons(emoticons, sales);
-        
-        for(int i=0;i<users.length;i++){
-            int amount = 0;
-            for(int j =0;j<emoticons.length;j++){
-               if(sales[j] >= users[i][0]){
-                   amount += salesEmoticons[j];
-               }
-            }
-            //
-            if(amount >= users[i][1]){
-                result[0]++;
-            }
-            else{
-                result[1] += amount;
-            }
+    private void getSalesList(int len, int depth, int[] sale){
+        if(depth >= len){
+            sales.add(Arrays.copyOf(sale, len));
+            return;
         }
         
-        return result;
-    }
-    
-    public int[] calcSaleEmoticons(int[] emoticons, Integer[] sales){
-        int[] salesEmoticons = new int[emoticons.length];
-        
-        for(int i = 0; i < emoticons.length; i++){
-            salesEmoticons[i] = emoticons[i]* (100-sales[i])/100;
+        for(int i=10;i<=40;i+=10){
+            sale[depth] = i;
+            getSalesList(len,depth+1,sale);
         }
-        return salesEmoticons;
     }
-    
-    
 }
