@@ -14,9 +14,7 @@ class Solution {
         int[][] dp = new int[501][501];
         
         for(int i=0;i<dp.length;i++){
-            for(int j=0;j<dp[0].length;j++){
-                dp[i][j] = 123456789;
-            }
+            Arrays.fill(dp[i], 123456789);
         }
         
         dp[alp][cop] = 0;
