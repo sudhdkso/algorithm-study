@@ -1,72 +1,56 @@
 import java.util.*;
 import java.util.stream.Collectors;
+
 class Solution {
-    private String[] priorities = {"+-*","+*-","-+*","-*+","*+-","*-+"};
-    private List<Long> operand = new ArrayList<>();
-    private List<Character> operator = new ArrayList<>();
-    
-    private long max = 0;
-    
+    private static String[] priorities = {"+-*","+*-","-+*","-*+","*-+","*+-"};
+    private static List<Long> result = new ArrayList<>();
     public long solution(String expression) {
- 
-        parseExpression(expression);
-        
-        for(String priority : priorities) {
-            calcExpression(priority.toCharArray(), 0, new ArrayList<>(operand), new ArrayList<>(operator));
-            
-        }
-        
-        return max;
-    }
-    
-    private void parseExpression(String expression){
-        
-        operand = Arrays.stream(expression.split("[+*-]"))
+        long answer = 0;
+        List<Long> nums = Arrays.stream(expression.split("[-*+]"))
             .map(Long::parseLong)
             .collect(Collectors.toList());
+        List<String> operators = Arrays.stream(expression.split("[0-9]{1,3}"))
+            .filter(x -> !x.equals(""))
+            .collect(Collectors.toList());
         
-        for(char ex : expression.toCharArray()){
-            if(ex == '+' || ex == '-' || ex == '*'){
-                operator.add(ex);
-            }
+        for(String priority: priorities){
+            dfs(new ArrayList<>(nums), new ArrayList<>(operators), priority.toCharArray(), 0);
         }
-
+        Collections.sort(result, Collections.reverseOrder());
+        return result.get(0);
     }
     
-    private void calcExpression(char[] priority, int depth, List<Long> copyOperand, List<Character> copyOperator) {
+
+    private static void dfs(List<Long> nums, List<String> operators, char[] priority, int depth){
         if(depth >= priority.length){
-            max = Math.max(Math.abs(copyOperand.get(0)), max);
+            result.add(Math.abs(nums.get(0)));
             return;
         }
+        char op = priority[depth];
+        int index = operators.indexOf(String.valueOf(op));
         
-        while(true){
-            int index = copyOperator.indexOf(priority[depth]);
-
-            if(index < 0){
-                break;
-            }
+        while(index >= 0){
+            operators.remove(index);
+            long num1 = nums.get(index);
+            nums.remove(index);
+            long num2 = nums.get(index);
+            nums.remove(index);
             
-            long result = calculate(copyOperand.get(index), copyOperand.get(index+1), copyOperator.get(index));
-            
-            copyOperand.remove(index);
-            copyOperand.remove(index);
-            copyOperator.remove(index);
-            
-            copyOperand.add(index, result);
+            nums.add(index, calculate(op, num1, num2));
+            index = operators.indexOf(String.valueOf(op));
         }
-        
-        calcExpression(priority, depth+1, copyOperand, copyOperator);
-        
+        dfs(nums, operators, priority, depth+1);
     }
-    private long calculate(long a, long b, char op){
+    
+    private static long calculate(char op, long num1, long num2){
         if(op == '+'){
-            return a+b;
+            return num1 + num2;
         }
         else if(op == '-'){
-            return a-b;
+            return num1 - num2;
         }
-        else {
-            return a*b;
+        else{
+            return num1 * num2;
         }
     }
 }
