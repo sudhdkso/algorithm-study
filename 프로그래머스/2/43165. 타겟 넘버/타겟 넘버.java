@@ -1,21 +1,22 @@
 class Solution {
-    private static int answer = 0;
     public int solution(int[] numbers, int target) {
-        dfs(0, numbers, 0, target);
-        return answer;
+        int answer = 0;
+        return dfs(0,0,numbers,target);
     }
     
-    private static void dfs(int index, int[] numbers, int result, int target){
-        if(index >= numbers.length){
-            if(result == target){
-                answer++;
+    private static int dfs(int now, int index, int[] numbers, int target){
+        if(index == numbers.length){
+            if(now == target){
+                return 1;
             }
-            return;
+            return 0;
         }
         
-        dfs(index+1,numbers, result + numbers[index], target);
-        dfs(index+1,numbers, result - numbers[index], target);
+        int answer = 0;
         
+        answer += dfs(now+numbers[index], index+1, numbers, target);
+        answer += dfs(now-numbers[index], index+1, numbers, target);
+        return answer;
         
     }
 }
