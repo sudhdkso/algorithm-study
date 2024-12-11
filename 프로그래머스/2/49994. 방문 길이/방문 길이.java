@@ -1,40 +1,47 @@
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
 class Solution {
-    private int MAX_X = 5, MAX_Y = 5, MIN_X = -5, MIN_Y = -5;
+    private static int MIN_X = -5, MIN_Y = -5, MAX_X = 5, MAX_Y = 5;
+    private static int[] dx = {0,0,1,-1}, dy = {1,-1,0,0};
     
-    private int[] dx = {1,-1,0,0}, dy = {0,0,1,-1};
-
-    private Map<String, Integer> key = new HashMap<>();
     public int solution(String dirs) {
-        int x = 0, y = 0;
-        Set<String> visited = new HashSet<>();
+        int answer = 0;
+        Set<String> set = new HashSet<>();
         
-        setting();
+        int sx = 0, sy = 0;
         
-        for(String dir : dirs.split("")) {
-            int index = key.get(dir);
+        for(char dir : dirs.toCharArray()){
+            int move = getMoveDir(dir);
+            int nx = sx + dx[move];
+            int ny = sy + dy[move];
             
-            int nx = x + dx[index];
-            int ny = y + dy[index];
             if(nx >= MIN_X && ny >= MIN_Y && nx <= MAX_X && ny <= MAX_Y){
-                visited.add(nx+" "+ny+" "+x+" "+y);
-                visited.add(x+" "+y+" "+nx+" "+ny);
-                x = nx;
-                y = ny;
+                
+                set.add(sx+" "+sy+" "+nx+" "+ny);
+                set.add(nx+" "+ny+" "+sx+" "+sy);
+
+                sx = nx;
+                sy = ny;    
             }
+ 
+                      
         }
-        return visited.size()/2;
+        return set.size()/2;
     }
     
-    private void setting(){
-        String direction = "UDRL";
-        for(int i=0;i<direction.length();i++){
-            key.put(direction.substring(i,i+1),i);
+    private static int getMoveDir(char ch){
+        if(ch == 'U'){
+            return 0;
+        }
+        else if(ch == 'D'){
+            return 1;
+        }
+        else if(ch == 'R'){
+            return 2;
+        }
+        else {
+            return 3;
         }
     }
-    
 }
