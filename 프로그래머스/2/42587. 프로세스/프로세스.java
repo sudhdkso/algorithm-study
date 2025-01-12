@@ -1,54 +1,43 @@
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 class Solution {
-    private class Process implements Comparable<Process>{
-        int index;
-        int priority;
-        public Process(int index, int priority) {
+    private static class Process{
+        int index, priority;
+        public Process(int index, int priority){
             this.index = index;
             this.priority = priority;
-        }
-        
-        @Override
-        public int compareTo(Process e) {
-            return Integer.compare(e.priority, this.priority);
-        }
-        
-        @Override
-        public String toString(){
-            return "[index = "+index+" ,priority = "+priority+"]\n";
         }
     }
     
     public int solution(int[] priorities, int location) {
         int answer = 0;
+        PriorityQueue<Integer> pq = new PriorityQueue<>((o1,o2) -> o2-o1);
+        pq.addAll(Arrays.stream(priorities).boxed().collect(Collectors.toList()));
         
         Queue<Process> q = new LinkedList<>();
-        PriorityQueue<Process> pq = new PriorityQueue<>();
         
         for(int i=0;i<priorities.length;i++){
-            Process process = new Process(i, priorities[i]);
-            q.offer(process);
-            pq.offer(process);
+            q.offer(new Process(i, priorities[i]));
         }
-
+        
         while(!q.isEmpty()){
-            if(q.peek().priority < pq.peek().priority) {
-                q.offer(q.poll());
-            }
-            else if(q.peek().priority == pq.peek().priority) {
+            Process now = q.poll();
+            if(now.priority == pq.peek()){
+                pq.poll();
                 answer++;
-                if(q.peek().index == location){
+                if(now.index == location){
                     break;
                 }
-                q.poll();
-                pq.poll();
+            }
+            else{
+                q.offer(now);
+
             }
         }
-        
-        
         return answer;
     }
 }
