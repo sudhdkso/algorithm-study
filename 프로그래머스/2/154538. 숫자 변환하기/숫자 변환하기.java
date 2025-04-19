@@ -1,26 +1,27 @@
 import java.util.Arrays;
 
 class Solution {
-    private static int MAX_VALUE = 1_000_000;
     public int solution(int x, int y, int n) {
         int answer = 0;
+        // x -> y
+        //
+        int[] dp = new int[y+1];
         
-        int[] dp = new int[MAX_VALUE+1];
         Arrays.fill(dp, Integer.MAX_VALUE-1);
-        dp[x] = 0;
+        dp[y] = 0;
         
-        for(int i=x;i<=y;i++){
-            if(i*2 <= MAX_VALUE) {
-                dp[i*2] = Math.min(dp[i]+1,dp[i*2]); 
+        for(int i=y;i>=x;i--){
+            if(i%3 == 0){
+                dp[i/3] = Math.min(dp[i/3], dp[i]+1);
             }
-            if(i*3 <= MAX_VALUE) {
-                dp[i*3] = Math.min(dp[i]+1, dp[i*3]);
+            if(i%2 == 0){
+                dp[i/2] = Math.min(dp[i/2], dp[i]+1);
             }
-            if(i+n <= MAX_VALUE) {
-                dp[i+n] = Math.min(dp[i]+1, dp[i+n]);
+            if(i-n >= 0){
+                dp[i-n] = Math.min(dp[i-n], dp[i]+1);
             }
         }
 
-        return dp[y] == Integer.MAX_VALUE-1 ? -1 : dp[y];
+        return dp[x] == Integer.MAX_VALUE-1 ? -1 : dp[x];
     }
 }
