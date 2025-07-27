@@ -3,76 +3,82 @@ import java.util.LinkedList;
 import java.util.Arrays;
 
 class Solution {
-    private static char START = 'S', LEVER = 'L', WALL = 'X', PATH = 'O', END = 'E';
+    static class Point{
+        int x,y;
+        public Point(int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+    }
+    
+    static int[] dx = {1,0,-1,0}, dy = {0,1,0,-1};
+    static char START = 'S', LEVER = 'L', END = 'E';
+    
     public int solution(String[] maps) {
         int answer = 0;
         
-        int n = maps.length;
-        int m = maps[0].length();
+        int n = maps.length, m = maps[0].length();
         
-        char[][] ch = new char[n][m];
+        char[][] map = new char[n][m];
         
         for(int i=0;i<n;i++){
-            ch[i] = maps[i].toCharArray();
+            map[i] = maps[i].toCharArray();
         }
         
-        int sToL = bfs(START,LEVER, n , m ,ch);
-        int lToE = bfs(LEVER,END, n , m ,ch);
-        answer = (sToL == -1 || lToE == -1) ? -1 : sToL+lToE;
-        return answer;
+        Point st = findPosition(map, START);
+        Point le = findPosition(map, LEVER);
+        Point ed = findPosition(map, END);
+
+        int sToL = bfs(map, n,m,st,le);
+        int lToE = bfs(map, n,m,le,ed);
+        if(sToL == -1 || lToE == -1) return -1;
+        
+        return sToL+lToE;
     }
     
-    private Integer[] findPosition(char target, char[][] maps){
-        int n = maps.length;
-        int m = maps[0].length;
+    private static Point findPosition(char[][] map, char ch){
         
-        for(int i=0;i<n;i++){
-            for(int j=0;j<m;j++){
-                if(maps[i][j] == target){
-                    return new Integer[]{i,j};
+        for(int i=0;i<map.length;i++){
+            for(int j=0;j<map[i].length;j++){
+                if(map[i][j] == ch){
+                    return new Point(i,j);
                 }
             }
         }
-        return new Integer[]{-1,-1};
+        return new Point(-1,-1);
     }
-    
-    int[] dx = {1,0,-1,0}, dy = {0,1,0,-1};
-    
-    private int bfs(char st, char dt, int n, int m, char[][] maps){
-        Queue<Integer[]> q = new LinkedList<>();
-        
-        Integer[] s = findPosition(st, maps);
-        q.offer(s);
+    private static int bfs(char[][] map, int n, int m, Point src, Point dst){
         boolean[][] visited = new boolean[n][m];
         int[][] dist = new int[n][m];
+        Queue<Point> q = new LinkedList<>();
         
         for(int i=0;i<n;i++){
-            Arrays.fill(dist[i],Integer.MAX_VALUE);
+            Arrays.fill(dist[i],Integer.MAX_VALUE-1);
         }
+        visited[src.x][src.y] = true;
+        dist[src.x][src.y] = 0;
         
-        dist[s[0]][s[1]] = 0;
-        visited[s[0]][s[1]] = true;
+        q.offer(src);
         
         while(!q.isEmpty()){
-            Integer[] now = q.poll();
-            if(maps[now[0]][now[1]] == dt){
-                return dist[now[0]][now[1]];
+            Point now = q.poll();
+            if(now.x == dst.x && now.y == dst.y){
+                return dist[dst.x][dst.y];
             }
+            
             for(int i=0;i<4;i++){
-                int nx = now[0] + dx[i];
-                int ny = now[1] + dy[i];
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
                 
-                if(nx >=0 && ny >= 0 && nx < n && ny < m){
-                    if(visited[nx][ny] || maps[nx][ny] == WALL) continue;
-                    if(dist[nx][ny] > dist[now[0]][now[1]] + 1){
-                        dist[nx][ny] = dist[now[0]][now[1]] + 1;
-                        q.offer(new Integer[]{nx,ny});
-                        visited[nx][ny] = true;
-                    }
-                    
+                if(nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+                if(!visited[nx][ny] && map[nx][ny] != 'X' && dist[nx][ny] > dist[now.x][now.y] + 1){
+                    dist[nx][ny] =  dist[now.x][now.y]+1;
+                    visited[nx][ny] = true;
+                    q.offer(new Point(nx,ny));
                 }
             }
         }
         return -1;
+        
     }
 }
