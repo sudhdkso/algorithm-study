@@ -4,22 +4,19 @@ class Solution
 {
     public int solution(String s)
     {
-        int answer = 0;
+        int answer = -1;
+
         Stack<Character> st = new Stack<>();
         
-        for(char c : s.toCharArray()){
-
-            if(st.isEmpty()){
-                st.push(c);
-                continue;
+        for(Character ch : s.toCharArray()){
+            if(st.isEmpty() || st.peek() != ch){
+                st.push(ch);
             }
-            if(st.peek() == c){
+            else if(st.peek() == ch){
                 st.pop();
             }
-            else{
-                st.push(c);
-            }
         }
+        
         return st.isEmpty() ? 1 : 0;
     }
 }
