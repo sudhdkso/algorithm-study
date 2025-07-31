@@ -1,32 +1,23 @@
-import java.util.Queue;
-import java.util.LinkedList;
-
+import java.util.Arrays;
 class Solution {
+    private final static int MAX = 1_000_000;
     public int solution(int x, int y, int n) {
         int answer = 0;
-        return bfs(x,y,n);
-    }
-    
-    private static int bfs(int x, int y, int n){
-        Queue<int[]> q = new LinkedList<>();
-        boolean[] visited = new boolean[1_000_001];
-        visited[x] = true;
-        q.offer(new int[]{x,0});
-        
-        while(!q.isEmpty()){
-            int[] now = q.poll();
-            int cur = now[0];
-            int cnt = now[1];
-            if(cur == y){
-                return cnt;
+        int[] dp = new int[MAX+1];
+        Arrays.fill(dp, Integer.MAX_VALUE-1);
+        dp[x] = 0;
+        for(int i = x; i<= y;i++){
+            if(i*2 <= MAX){
+                dp[i*2] = Math.min(dp[i]+1, dp[i*2]);
             }
-            
-            for(int next: new int[]{cur*2,cur*3,cur+n}){
-                if(next > 1_000_000 || visited[next]) continue;
-                q.offer(new int[]{next, cnt+1});
-                visited[next] = true;
+            if(i*3 <= MAX){
+                dp[i*3] = Math.min(dp[i]+1, dp[i*3]);
+            }
+            if(i+n <= MAX){
+                dp[i+n] = Math.min(dp[i]+1, dp[i+n]);
             }
         }
-        return -1;
+        
+        return dp[y] == Integer.MAX_VALUE-1 ? -1: dp[y];
     }
 }
