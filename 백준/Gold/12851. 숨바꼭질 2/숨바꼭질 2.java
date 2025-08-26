@@ -1,56 +1,65 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
 
 public class Main {
-    static class Coordi{
-        int x, time;
+	static class Position{
+		int x, time;
 
-        public Coordi(int x, int time) {
-            this.x = x;
-            this.time = time;
-        }
-    }
-    static boolean[] visited;
-    static int min = Integer.MAX_VALUE;
-    static int count = 0;
-    private static void bfs(int N, int K){
-        PriorityQueue<Coordi> pq = new PriorityQueue<>((o1,o2) -> o1.time-o2.time);
-        pq.offer(new Coordi(N,0));
-        visited[N] = true;
-        while(!pq.isEmpty()){
-            Coordi cd = pq.poll();
-            visited[cd.x] = true;
-            if(cd.x == K){
-                if(min == cd.time){
-                    count++;
-                }
-                if(min > cd.time){
-                    min = cd.time;
-                    count = 1;
-                }
-            }
-            if(cd.x*2 <=100_001 && !visited[cd.x*2]){
-                pq.offer(new Coordi(cd.x*2,cd.time+1));
-            }
-            if(cd.x+1 <= 100_001 && !visited[cd.x+1]){
-                pq.offer(new Coordi(cd.x+1,cd.time+1));
-            }
-            if(cd.x-1 >= 0 && !visited[cd.x-1]){
-                pq.offer(new Coordi(cd.x-1,cd.time+1));
-            }
-        }
+		public Position(int x, int time){
+			this.x = x;
+			this.time = time;
+		}
+	}
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-    }
-    public static void main (String[]args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-        int N = Integer.parseInt(st.nextToken());
-        int K = Integer.parseInt(st.nextToken());
-        visited = new boolean[100_002];
-        bfs(N,K);
-        bw.write(min+"\n"+count);
-        bw.flush();
-    }
+		StringTokenizer st= new StringTokenizer(br.readLine()," ");
 
+		int N = Integer.parseInt(st.nextToken());
+		int K = Integer.parseInt(st.nextToken());
+
+		int[] result = bfs(N, K);
+		bw.write(result[0]+"\n"+result[1]+"\n");
+		bw.flush();
+		bw.close();
+	}
+
+	private static int[] bfs(int start, int dst){
+		Queue<Position> q = new LinkedList<>();
+		int[] dist = new int[100_001];
+		Arrays.fill(dist, -1);
+
+		q.offer(new Position(start, 0));
+		dist[start] = 0;
+
+		int min = Integer.MAX_VALUE, count = 0;
+		while(!q.isEmpty()){
+			Position p = q.poll();
+			int cur = p.x;
+			if(cur == dst){
+				if(min == p.time) count++;
+				else if(min > p.time){
+					min = p.time;
+					count = 1;
+				}
+			}
+
+			for(int n : new int[]{cur+1,cur-1,cur*2}){
+				if(n < 0 || n > 100_000) continue;
+				if(dist[n] == -1 || dist[n] == dist[cur] + 1){
+					dist[n] = dist[cur]+1;
+					q.offer(new Position(n, p.time+1));
+				}
+			}
+		}
+		return new int[]{min, count};
+	}
 }
