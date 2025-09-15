@@ -1,61 +1,37 @@
-import java.util.Stack;
-
 class Solution {
-    public int solution(String begin, String target, String[] words) {
-        int answer = 0;
-        
-        if(!isConvertBeginToTarget(target, words)){
-            return answer;
-        }
-        
-        dfs(0, begin, target, new boolean[words.length], words);
-        
-        return min;
-    }
-    
-    private boolean isConvertBeginToTarget(String target, String[] words){
-        for(int i=0;i<words.length;i++){
-            if(words[i].equals(target)){
-                return true;
-            }
-        }    
-        return false;
-    }
-    
     private static int min = Integer.MAX_VALUE;
     
-    private void dfs(int depth, String current, String target, boolean[] visited, String[] words){
-        
-        if(current.equals(target)){
-            min = Math.min(depth, min);
-            return;
-        }
-        
-        if(depth >= visited.length){
-            return;
-        }
-        
-        for(int i=0;i<words.length;i++){
-            if(!visited[i] && isConvert(current, words[i])){
-                visited[i] = true;
-                dfs(depth+1, words[i], target, visited, words);
-                visited[i] = false;
-            }
-        }
+    public int solution(String begin, String target, String[] words) {
+        dfs(new boolean[words.length], words, begin, target, 0);
+        return min == Integer.MAX_VALUE ? 0 : min;
     }
     
+    private static void dfs(boolean[] visited, String[] words, String now, String target, int depth){
+        if(now.equals(target)){
+            min = Math.min(min, depth);
+            return;
+        }
+        int result = Integer.MAX_VALUE;
+        for(int i=0;i<words.length;i++){
+            if(!visited[i] && canChange(now.toCharArray(), words[i].toCharArray())){
+                visited[i] = true;
+                dfs(visited, words, words[i], target, depth+1);
+                visited[i] = false; 
+            }
+        }
+        return;
+    }
     
-    private boolean isConvert(String current , String target){
+    private static boolean canChange(char[] s1, char[] s2){
         int count = 0;
-        for(int i=0;i<current.length();i++){
-            if(current.charAt(i) != target.charAt(i)){
+        for(int i=0;i<s1.length;i++){
+            if(s1[i] != s2[i]){
                 count++;
             }
-            if(count > 1){
+            if(count >= 2){
                 return false;
             }
         }
-        
-        return count == 1;
+        return true;
     }
 }
