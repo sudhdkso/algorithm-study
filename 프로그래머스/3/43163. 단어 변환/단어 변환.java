@@ -1,25 +1,19 @@
+import java.util.Queue;
+import java.util.LinkedList;
+
 class Solution {
-    private static int min = Integer.MAX_VALUE;
-    
-    public int solution(String begin, String target, String[] words) {
-        dfs(new boolean[words.length], words, begin, target, 0);
-        return min == Integer.MAX_VALUE ? 0 : min;
+    static class Node{
+        String word;
+        int depth;
+        public Node(String word, int depth){
+            this.word = word;
+            this.depth = depth;
+        }
     }
     
-    private static void dfs(boolean[] visited, String[] words, String now, String target, int depth){
-        if(now.equals(target)){
-            min = Math.min(min, depth);
-            return;
-        }
-        int result = Integer.MAX_VALUE;
-        for(int i=0;i<words.length;i++){
-            if(!visited[i] && canChange(now.toCharArray(), words[i].toCharArray())){
-                visited[i] = true;
-                dfs(visited, words, words[i], target, depth+1);
-                visited[i] = false; 
-            }
-        }
-        return;
+    public int solution(String begin, String target, String[] words) {
+        int answer = 0;
+        return bfs(words, begin, target);
     }
     
     private static boolean canChange(char[] s1, char[] s2){
@@ -33,5 +27,26 @@ class Solution {
             }
         }
         return true;
+    }
+    
+    private static int bfs(String[] words, String begin, String target){
+        boolean[] visited = new boolean[words.length];
+        Queue<Node> q = new LinkedList<>();
+        q.offer(new Node(begin, 0));
+        
+        while(!q.isEmpty()){
+            Node cur = q.poll();
+            if(cur.word.equals(target)){
+                return cur.depth;
+            }
+            
+            for(int i=0;i<words.length;i++){
+                if(!visited[i] && canChange(cur.word.toCharArray(), words[i].toCharArray())){
+                    visited[i] = true;
+                    q.offer(new Node(words[i], cur.depth+1));
+                }
+            }
+        }
+        return 0;
     }
 }
