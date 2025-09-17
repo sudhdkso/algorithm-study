@@ -3,22 +3,23 @@ import java.util.Stack;
 class Solution {
     boolean solution(String s) {
         boolean answer = true;
-
-        Stack<Integer> bracket = new Stack<>();
-        char[] ch = s.toCharArray();
+        Stack<Character> st = new Stack<>();
         
-        for(char a : ch) {
-            if(a == '(') {
-                bracket.push(1);
+        for(Character ch: s.toCharArray()){
+            if(ch == '('){
+                st.push('(');
+                continue;
             }
-            else if(a == ')' && !bracket.isEmpty()){
-                bracket.pop();
+            
+            if(!st.isEmpty() && ch ==')'){
+                st.pop();
             }
-            else {
+            else{
                 return false;
             }
         }
-        
-        return bracket.isEmpty();
+    
+
+        return st.isEmpty();
     }
 }
